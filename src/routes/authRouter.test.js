@@ -20,16 +20,13 @@ async function createAdminUser() {
   return user;
 }
 
-const adminUser = createAdminUser();
+const adminUser = { name: '常用名字', email: 'a@jwt.com', password: 'admin' };
 let testAdminAuthToken;
 
 beforeAll(async () => {
   testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
   const registerRes = await request(app).post('/api/auth').send(testUser);
   testUserAuthToken = registerRes.body.token;
-
-  const adminRegisterRes = await request(app).post('/api/auth').send(adminUser);
-  testAdminAuthToken = adminRegisterRes.body.token;
 });
 
 test('register fail', async () => {
@@ -59,17 +56,17 @@ test('logout', async () => {
   expect(logoutRes.body.message).toBe('logout successful');
 });
 
-// test('updateUser', async () => {
-//   const loginRes = await request(app).put('/api/auth').send(adminUser);
-//   testAdminAuthToken = loginRes.body.token;
-//   const updateUserData = { email: 'newemail@test.com', password: 'newpassword' };
+test('updateUser', async () => {
+  const loginRes = await request(app).put('/api/auth').send(adminUser);
+  testAdminAuthToken = loginRes.body.token;
+  const updateUserData = { email: 'newemail@test.com', password: 'newpassword' };
   
-//   const updateRes = await request(app).put(`/api/auth/1`).send(updateUserData).set('Authorization', `Bearer ${testAdminAuthToken}`);
+  const updateRes = await request(app).put(`/api/auth/2`).send(updateUserData).set('Authorization', `Bearer ${testAdminAuthToken}`);
 
-//   expect(updateRes.status).toBe(200);
-//   expect(updateRes.body.email).toBe(updateUserData.email);
-//   const logoutRes = await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
-// });
+  expect(updateRes.status).toBe(200);
+  expect(updateRes.body.email).toBe(updateUserData.email);
+  await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
+});
 
 test('updateUser unauthorized', async () => {
   const loginRes = await request(app).put('/api/auth').send(testUser);
@@ -78,7 +75,7 @@ test('updateUser unauthorized', async () => {
   const originalEmail = loginRes.body.email;
   const updateUserData = { email: 'unauthorized@test.com', password: 'newpassword' };
   
-  const updateRes = await request(app).put(`/api/auth/1`).send(updateUserData).set('Authorization', `Bearer ${testUserAuthToken}`);
+  const updateRes = await request(app).put(`/api/auth/2`).send(updateUserData).set('Authorization', `Bearer ${testUserAuthToken}`);
 
   expect(updateRes.status).toBe(403);
   expect(updateRes.body.email).toBe(originalEmail);

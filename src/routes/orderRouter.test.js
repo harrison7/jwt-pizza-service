@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('../service');
 const { Role, DB } = require('../database/database.js');
+const bcrypt = require('bcrypt');
 
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
 let testUserAuthToken;
@@ -16,11 +17,11 @@ async function createAdminUser() {
 
   await DB.addUser(user);
 
-  user.password = 'toomanysecrets';
+  user.password = await bcrypt.hash('toomanysecrets', 10);
   return user;
 }
 
-let adminUser;
+const adminUser = { name: '常用名字', email: 'a@jwt.com', password: 'admin' };
 let testAdminAuthToken;
 
 beforeAll(async () => {
@@ -38,12 +39,11 @@ test('getMenu', async () => {
 });
 
 test('addMenuItem', async () => {
-    const adminUser = await createAdminUser();
-    const adminRegisterRes = await request(app).post('/api/auth').send(adminUser);
-    testAdminAuthToken = adminRegisterRes.body.token;
-    await request(app).put('/api/auth').send(adminUser);
+    const adminLoginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = adminLoginRes.body.token;
 
     const newItem = { title: "Student", description: "No topping, no sauce, just carbs", image: "pizza9.png", price: 0.0001 }
     const registerRes = await request(app).put('/api/order/menu').set('Authorization', `Bearer ${testAdminAuthToken}`).send(newItem);
     expect(registerRes.status).toBe(200);
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
