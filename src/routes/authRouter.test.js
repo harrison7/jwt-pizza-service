@@ -61,7 +61,7 @@ test('updateUser', async () => {
   testAdminAuthToken = loginRes.body.token;
   const updateUserData = { email: 'newemail@test.com', password: 'newpassword' };
   
-  const updateRes = await request(app).put(`/api/auth/2`).send(updateUserData).set('Authorization', `Bearer ${testAdminAuthToken}`);
+  const updateRes = await request(app).put(`/api/auth/3`).send(updateUserData).set('Authorization', `Bearer ${testAdminAuthToken}`);
 
   expect(updateRes.status).toBe(200);
   expect(updateRes.body.email).toBe(updateUserData.email);

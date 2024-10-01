@@ -30,7 +30,8 @@ beforeAll(async () => {
     // testUserAuthToken = registerRes.body.token;
     // await request(app).put('/api/auth').send(testUser);
 
-    
+    const adminLoginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = adminLoginRes.body.token;
 });
 
 test('getMenu', async () => {
@@ -39,11 +40,18 @@ test('getMenu', async () => {
 });
 
 test('addMenuItem', async () => {
-    const adminLoginRes = await request(app).put('/api/auth').send(adminUser);
-    testAdminAuthToken = adminLoginRes.body.token;
-
     const newItem = { title: "Student", description: "No topping, no sauce, just carbs", image: "pizza9.png", price: 0.0001 }
     const registerRes = await request(app).put('/api/order/menu').set('Authorization', `Bearer ${testAdminAuthToken}`).send(newItem);
     expect(registerRes.status).toBe(200);
-    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
+
+test('getOrders', async () => {
+    const registerRes = await request(app).get('/api/order').set('Authorization', `Bearer ${testAdminAuthToken}`);
+    expect(registerRes.status).toBe(200);
+});
+
+// test('createOrders', async () => {
+//     const newOrder = {franchiseId: 1, storeId:1, items:[{ menuId: 1, description: "Veggie", price: 0.0038 }]};
+//     const registerRes = await request(app).post('/api/order').set('Authorization', `Bearer ${testAdminAuthToken}`).send(newOrder);
+//     expect(registerRes.status).toBe(200);
+// });
