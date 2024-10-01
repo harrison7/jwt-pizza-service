@@ -3,6 +3,6 @@ const app = require('../service');
 const { Role, DB } = require('../database/database.js');
 
 test('getMenu', async () => {
-    const registerRes = await request(app).get('/api/auth/menu');
+    const registerRes = await request(app).get('/api/order/menu');
     expect(registerRes.status).toBe(200);
 });
