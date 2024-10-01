@@ -18,3 +18,11 @@ test('login', async () => {
   const { password, ...user } = { ...testUser, roles: [{ role: 'diner' }] };
   expect(loginRes.body.user).toMatchObject(user);
 });
+
+test('logout', async () => {
+  const loginRes = await request(app).put('/api/auth').send(testUser);
+  testUserAuthToken = loginRes.body.token;
+  
+  const logoutRes = await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken}`);
+  expect(logoutRes.status).toBe(200);
+});
