@@ -4,8 +4,6 @@ const { Role, DB } = require('../database/database.js');
 
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
 let testUserAuthToken;
-const adminUser = createAdminUser();
-let testAdminAuthToken;
 
 if (process.env.VSCODE_INSPECTOR_OPTIONS) {
   jest.setTimeout(60 * 1000 * 5); // 5 minutes
@@ -21,6 +19,9 @@ async function createAdminUser() {
   user.password = 'toomanysecrets';
   return user;
 }
+
+const adminUser = createAdminUser();
+let testAdminAuthToken;
 
 beforeAll(async () => {
   testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
