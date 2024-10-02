@@ -66,13 +66,31 @@ test('createFranchise', async () => {
     const loginRes = await request(app).put('/api/auth').send(adminUser);
     testAdminAuthToken = loginRes.body.token;
 
-    const franchiseData = {name: "pizzaPocket2", admins: [{email: "a@jwt.com"}]};
+    const franchiseData = {name: "pizzaPocket", admins: [{email: "a@jwt.com"}]};
 
     const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);
     expect(registerRes.status).toBe(200);
 
     const franchiseID = registerRes.body.id;
 
+    await request(app).delete(`/api/franchise/${franchiseID}`).set('Authorization', `Bearer ${testAdminAuthToken}`);
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
+});
+
+test('createStore', async () => {
+    const loginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = loginRes.body.token;
+
+    const franchiseData = {name: "pizzaPocket2", admins: [{email: "a@jwt.com"}]};
+
+    const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);
+    const franchiseID = registerRes.body.id;
+    const storeData = {franchiseId: franchiseID, name:"SLC"};
+
+    const storeRes = await request(app).post(`/api/franchise/${franchiseID}/store`).send(storeData).set('Authorization', `Bearer ${testAdminAuthToken}`);
+    const storeID = storeRes.body.id;
+
+    await request(app).delete(`/api/franchise/${franchiseID}/store/${storeID}`).set('Authorization', `Bearer ${testAdminAuthToken}`);
     await request(app).delete(`/api/franchise/${franchiseID}`).set('Authorization', `Bearer ${testAdminAuthToken}`);
     await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
