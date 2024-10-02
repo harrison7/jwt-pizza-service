@@ -5,10 +5,10 @@ const { StatusCodeError } = require('../endpointHelper.js');
 const { Role, DB } = require('../database/database.js');
 
 const testUsers = [
-  { name: 'login', email: 'reg1@test.com', password: 'a' },
-  { name: 'logout', email: 'reg2@test.com', password: 'a' },
-  { name: 'updateUser', email: 'reg3@test.com', password: 'a' },
-  { name: 'updateUser unauthorized', email: 'reg4@test.com', password: 'a' }
+  { name: 'jeffery', email: 'reg1@test.com', password: 'a' },
+  { name: 'asdf', email: 'reg2@test.com', password: 'a' },
+  { name: 'qwer', email: 'reg3@test.com', password: 'a' },
+  { name: 'hjkl', email: 'reg4@test.com', password: 'a' }
 ];
 let testUserAuthToken = new Array(4);
 let testUserId = new Array(4);
@@ -66,9 +66,9 @@ test('createFranchise', async () => {
     const loginRes = await request(app).put('/api/auth').send(adminUser);
     testAdminAuthToken = loginRes.body.token;
 
-    const franchiseData = {name: "pizzaPocket", admins: [{"email": "a@jwt.com"}]};
+    const franchiseData = {name: "pizzaPocket2", admins: [{email: "a@jwt.com"}]};
 
-    const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);;
+    const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);
     expect(registerRes.status).toBe(200);
 
     const franchiseID = registerRes.body.id;

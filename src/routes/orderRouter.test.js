@@ -4,10 +4,10 @@ const { Role, DB } = require('../database/database.js');
 const { StatusCodeError } = require('../endpointHelper.js');
 
 const testUsers = [
-  { name: 'login', email: 'reg1@test.com', password: 'a' },
-  { name: 'logout', email: 'reg2@test.com', password: 'a' },
-  { name: 'updateUser', email: 'reg3@test.com', password: 'a' },
-  { name: 'updateUser unauthorized', email: 'reg4@test.com', password: 'a' }
+  { name: 'joe', email: 'reg1@test.com', password: 'a' },
+  { name: 'mama', email: 'reg2@test.com', password: 'a' },
+  { name: 'jospeh', email: 'reg3@test.com', password: 'a' },
+  { name: 'mother', email: 'reg4@test.com', password: 'a' }
 ];
 let testUserAuthToken = new Array(4);
 let testUserId = new Array(4);
@@ -63,13 +63,13 @@ test('addMenuItem', async () => {
 });
 
 test('getOrders', async () => {
-    const loginRes = await request(app).put('/api/auth').send(adminUser);
-    testAdminAuthToken = loginRes.body.token;
+    const loginRes = await request(app).put('/api/auth').send(testUsers[0]);
+    testUserAuthToken[0] = loginRes.body.token;
 
-    const registerRes = await request(app).get('/api/order').set('Authorization', `Bearer ${testAdminAuthToken}`);
+    const registerRes = await request(app).get('/api/order').set('Authorization', `Bearer ${testUserAuthToken[0]}`);
     expect(registerRes.status).toBe(200);
 
-    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken[0]}`);
 });
 
 // test('createOrders', async () => {
