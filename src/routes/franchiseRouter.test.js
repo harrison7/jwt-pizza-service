@@ -2,7 +2,7 @@ const request = require('supertest');
 const app = require('../service');
 const { StatusCodeError } = require('../endpointHelper.js');
 
-const { Role, DB } = require('../database/database.js');
+const { DB } = require('../database/database.js');
 
 const testUsers = [
   { name: 'jeffery', email: 'reg1@test.com', password: 'a' },
