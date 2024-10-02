@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../service');
-const { DB } = require('../database/database.js');
+const { Role, DB } = require('../database/database.js');
 const { StatusCodeError } = require('../endpointHelper.js');
 
 const testUsers = [
@@ -12,7 +12,7 @@ const testUsers = [
 ];
 let testUserAuthToken = new Array(4);
 let testUserId = new Array(4);
-const adminUser = { name: '常用名字', email: 'a@jwt.com', password: 'admin' };
+let adminUser;
 let testAdminAuthToken;
 
 if (process.env.VSCODE_INSPECTOR_OPTIONS) {
@@ -26,6 +26,13 @@ beforeAll(async () => {
     testUserAuthToken[i] = registerRes.body.token;
     testUserId[i] = registerRes.body.user.id;
   }
+  adminUser = { password: 'toomanysecrets', roles: [{ role: Role.Admin }] };
+  adminUser.name = 'adminR';
+  adminUser.email = adminUser.name + '@jwt.com';
+
+  await DB.addUser(adminUser);
+
+  adminUser.password = 'toomanysecrets';
 });
 
 afterAll(async () => {
