@@ -51,14 +51,24 @@ test('getMenu', async () => {
 });
 
 test('addMenuItem', async () => {
+    const loginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = loginRes.body.token;
+
     const newItem = { title: "Student", description: "No topping, no sauce, just carbs", image: "pizza9.png", price: 0.0001 }
     const registerRes = await request(app).put('/api/order/menu').set('Authorization', `Bearer ${testAdminAuthToken}`).send(newItem);
     expect(registerRes.status).toBe(200);
+
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
 
 test('getOrders', async () => {
+    const loginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = loginRes.body.token;
+
     const registerRes = await request(app).get('/api/order').set('Authorization', `Bearer ${testAdminAuthToken}`);
     expect(registerRes.status).toBe(200);
+
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
 
 // test('createOrders', async () => {
