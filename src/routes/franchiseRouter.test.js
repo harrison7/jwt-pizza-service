@@ -59,7 +59,7 @@ test('getFranchises', async () => {
     expect(registerRes.status).toBe(200);
 });
 
-test('getFranchises', async () => {
+test('getUserFranchises', async () => {
     const loginRes = await request(app).put('/api/auth').send(testUsers[0]);
     testUserAuthToken[0] = loginRes.body.token;
 
@@ -73,7 +73,7 @@ test('createFranchise', async () => {
     const loginRes = await request(app).put('/api/auth').send(adminUser);
     testAdminAuthToken = loginRes.body.token;
 
-    const franchiseData = {name: "pizzaPocket", admins: [{email: "a@jwt.com"}]};
+    const franchiseData = {name: "pizzaPocket", admins: [{email: "adminF@jwt.com"}]};
 
     const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);
     expect(registerRes.status).toBe(200);
