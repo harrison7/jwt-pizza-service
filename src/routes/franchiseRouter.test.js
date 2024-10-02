@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../service');
+const { StatusCodeError } = require('../endpointHelper.js');
 
 const { Role, DB } = require('../database/database.js');
 
@@ -49,4 +50,29 @@ afterAll(async () => {
 test('getFranchises', async () => {
     const registerRes = await request(app).get('/api/franchise');
     expect(registerRes.status).toBe(200);
+});
+
+test('getFranchises', async () => {
+    const loginRes = await request(app).put('/api/auth').send(testUsers[0]);
+    testUserAuthToken[0] = loginRes.body.token;
+
+    const registerRes = await request(app).get(`/api/franchise/${testUserId[0]}`).set('Authorization', `Bearer ${testUserAuthToken[0]}`);;
+    expect(registerRes.status).toBe(200);
+
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken[0]}`);
+});
+
+test('createFranchise', async () => {
+    const loginRes = await request(app).put('/api/auth').send(adminUser);
+    testAdminAuthToken = loginRes.body.token;
+
+    const franchiseData = {name: "pizzaPocket", admins: [{"email": "a@jwt.com"}]};
+
+    const registerRes = await request(app).post('/api/franchise').send(franchiseData).set('Authorization', `Bearer ${testAdminAuthToken}`);;
+    expect(registerRes.status).toBe(200);
+
+    const franchiseID = registerRes.body.id;
+
+    await request(app).delete(`/api/franchise/${franchiseID}`).set('Authorization', `Bearer ${testAdminAuthToken}`);
+    await request(app).delete('/api/auth').set('Authorization', `Bearer ${testAdminAuthToken}`);
 });
