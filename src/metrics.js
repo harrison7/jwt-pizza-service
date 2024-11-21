@@ -1,5 +1,5 @@
 const os = require('os');
-const config = require('./config.json');
+const config = require('./config.js');
 
 function getCpuUsagePercentage() {
   const cpuUsage = os.loadavg()[0] / os.cpus().length;
