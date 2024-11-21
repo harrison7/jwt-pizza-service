@@ -1,9 +1,9 @@
 const express = require('express');
 const config = require('../config.js');
+const metrics = require('../metrics');
 const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
-app.use(metrics.requestTracker);
 
 const orderRouter = express.Router();
 
@@ -45,6 +45,7 @@ orderRouter.endpoints = [
 orderRouter.get(
   '/menu',
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('get');
     res.send(await DB.getMenu());
   })
 );
@@ -69,6 +70,7 @@ orderRouter.get(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('get');
     res.json(await DB.getOrders(req.user, req.query.page));
   })
 );
@@ -78,6 +80,8 @@ orderRouter.post(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
+    metrics.incrementRequests('post');
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);
     const r = await fetch(`${config.factory.url}/api/order`, {
@@ -87,10 +91,17 @@ orderRouter.post(
     });
     const j = await r.json();
     if (r.ok) {
+      let cost = 0;
+      r.order.items.forEach(function(item) {
+        cost += item.price;
+      });
+      metrics.pizzaSold(cost);
       res.send({ order, jwt: j.jwt, reportUrl: j.reportUrl });
     } else {
+      metrics.pizzaFail();
       res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: j.reportUrl });
     }
+    metrics.pizzaLatency(startTimer, performance.now());
   })
 );
 
