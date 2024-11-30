@@ -18,6 +18,7 @@ class Metrics {
   constructor() {
     this.httpRequests = 0;
     this.getRequests = 0;
+    this.putRequests = 0;
     this.postRequests = 0;
     this.deleteRequests = 0;
     this.authSuccess = 0;
@@ -28,11 +29,13 @@ class Metrics {
     this.cashEarned = 0;
     this.requestLatency = 0;
     this.pizzaLatency = 0;
+    
 
     // This will periodically sent metrics to Grafana
     const timer = setInterval(() => {
       this.sendMetricToGrafana('request', 'all', 'total', this.httpRequests);
       this.sendMetricToGrafana('request', 'get', 'get', this.getRequests);
+      this.sendMetricToGrafana('request', 'put', 'put', this.putRequests);
       this.sendMetricToGrafana('request', 'post', 'post', this.postRequests);
       this.sendMetricToGrafana('request', 'delete', 'delete', this.deleteRequests);
 
@@ -58,6 +61,9 @@ class Metrics {
     this.httpRequests++;
     if (request === 'get') {
       this.getRequests++;
+    }
+    if (request === 'put') {
+      this.putRequests++;
     }
     if (request === 'post') {
       this.postRequests++;

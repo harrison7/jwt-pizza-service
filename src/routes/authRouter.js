@@ -85,6 +85,7 @@ authRouter.put(
   '/',
   asyncHandler(async (req, res) => {
     metrics.userLogin();
+    metrics.incrementRequests('put');
     const { email, password } = req.body;
     const user = await DB.getUser(email, password);
     const auth = await setAuth(user);
@@ -109,6 +110,7 @@ authRouter.put(
   '/:userId',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    metrics.incrementRequests('put');
     const { email, password } = req.body;
     const userId = Number(req.params.userId);
     const user = req.user;
