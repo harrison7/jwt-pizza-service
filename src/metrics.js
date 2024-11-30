@@ -44,15 +44,15 @@ class Metrics {
       this.sendMetricToGrafana('auth', 'login', 'success', this.authSuccess);
       this.sendMetricToGrafana('auth', 'login', 'fail', this.authFail);
 
-      this.sendMetricToGrafana('pizza', 'sold', 'quantity', this.pizzasSold);
-      this.sendMetricToGrafana('pizza', 'fail', 'quantity', this.pizzaFails);
-      this.sendMetricToGrafana('pizza', 'sold', 'cash', this.cashEarned);
+      this.sendMetricToGrafana('pizza', 'sold', 'sold', this.pizzasSold);
+      this.sendMetricToGrafana('pizza', 'fail', 'fail', this.pizzaFails);
+      this.sendMetricToGrafana('pizza', 'cash', 'cash', this.cashEarned);
 
       this.sendMetricToGrafana('system', 'latency', 'request', this.requestLatency);
       this.sendMetricToGrafana('system', 'latency', 'pizza', this.pizzaLatency);
 
-      this.sendMetricToGrafana('system', 'cpu', 'usage', getCpuUsagePercentage());
-      this.sendMetricToGrafana('system', 'memory', 'usage', getMemoryUsagePercentage());
+      this.sendMetricToGrafana('system', 'cpu', 'cpu', getCpuUsagePercentage());
+      this.sendMetricToGrafana('system', 'memory', 'memory', getMemoryUsagePercentage());
     }, 10000);
     timer.unref();
   }
