@@ -5,7 +5,7 @@ const { StatusCodeError } = require('../endpointHelper.js');
 const { Role } = require('../model/model.js');
 const dbModel = require('./dbModel.js');
 
-const logger = require('./logger');
+const logger = require('../logger');
 class DB {
   constructor() {
     this.initialized = this.initializeDatabase();
