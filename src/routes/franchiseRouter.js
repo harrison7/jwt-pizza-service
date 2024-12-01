@@ -5,9 +5,9 @@ const metrics = require('../metrics');
 const { StatusCodeError, asyncHandler } = require('../endpointHelper.js');
 
 const logger = require('../logger');
-app.use(logger.httpLogger);
 
 const franchiseRouter = express.Router();
+franchiseRouter.use(logger.httpLogger);
 
 franchiseRouter.endpoints = [
   {

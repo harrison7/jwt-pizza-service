@@ -5,8 +5,9 @@ const metrics = require('../metrics');
 const { asyncHandler } = require('../endpointHelper.js');
 const { DB, Role } = require('../database/database.js');
 const logger = require('./logger');
-app.use(logger.httpLogger);
+
 const authRouter = express.Router();
+authRouter.use(logger.httpLogger);
 
 authRouter.endpoints = [
   {
