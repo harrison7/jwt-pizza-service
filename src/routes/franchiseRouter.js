@@ -2,9 +2,8 @@ const express = require('express');
 const { DB, Role } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const metrics = require('../metrics');
-const { StatusCodeError, asyncHandler } = require('../endpointHelper.js');
-
 const logger = require('../logger');
+const { StatusCodeError, asyncHandler } = require('../endpointHelper.js');
 
 const franchiseRouter = express.Router();
 franchiseRouter.use(logger.httpLogger);
