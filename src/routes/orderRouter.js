@@ -97,7 +97,10 @@ orderRouter.post(
     const j = await r.json();
     if (r.ok) {
       let cost = 0;
-      r.order.items.forEach(function(item) {
+
+      console.log(req.body);
+
+      req.body.items.forEach(function(item) {
         cost += item.price;
       });
       metrics.pizzaSold(cost);
