@@ -98,8 +98,6 @@ orderRouter.post(
     if (r.ok) {
       let cost = 0;
 
-      console.log(req.body);
-
       req.body.items.forEach(function(item) {
         cost += item.price;
       });
