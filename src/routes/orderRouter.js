@@ -1,5 +1,5 @@
 const express = require('express');
-const config = require('../config.js');
+const config = require('../config.js'); 
 const metrics = require('../metrics');
 const logger = require('../logger');
 const { Role, DB } = require('../database/database.js');
