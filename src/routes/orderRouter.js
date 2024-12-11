@@ -108,13 +108,13 @@ orderRouter.post(
         cost += item.price;
       });
       metrics.pizzaSold(cost);
+      metrics.timePizza(startTimer, performance.now());
+      metrics.timeService(startTimer, performance.now());
       res.send({ order, jwt: j.jwt, reportUrl: j.reportUrl });
     } else {
       metrics.pizzaFail();
       res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: j.reportUrl });
     }
-    metrics.timePizza(startTimer, performance.now());
-    metrics.timeService(startTimer, performance.now());
   })
 );
 
