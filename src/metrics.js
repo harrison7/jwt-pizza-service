@@ -14,6 +14,11 @@ function getMemoryUsagePercentage() {
   return memoryUsage.toFixed(2);
 }
 
+function getAverage(arr) {
+  const sum = arr.reduce((acc, val) => acc + val, 0);
+  return arr.length === 0 ? 0 : sum / arr.length;
+}
+
 class Metrics {
   constructor() {
     this.httpRequests = 0;
@@ -27,8 +32,8 @@ class Metrics {
     this.pizzasSold = 0;
     this.pizzaFails = 0;
     this.cashEarned = 0;
-    this.requestLatency = 0;
-    this.pizzaLatency = 0;
+    this.requestLatency = [];
+    this.pizzaLatency = [];
     
 
     // This will periodically sent metrics to Grafana
@@ -48,8 +53,14 @@ class Metrics {
       this.sendMetricToGrafana('pizza', 'fail', 'fail', this.pizzaFails);
       this.sendMetricToGrafana('pizza', 'cash', 'cash', this.cashEarned);
 
-      this.sendMetricToGrafana('system', 'latency', 'request', this.requestLatency);
-      this.sendMetricToGrafana('system', 'latency', 'pizza', this.pizzaLatency);
+      let reqAverage = getAverage(this.requestLatency);
+      let pizzaAverage = getAverage(this.pizzaLatency);
+
+      this.sendMetricToGrafana('system', 'latency', 'request', reqAverage);
+      this.sendMetricToGrafana('system', 'latency', 'pizza', pizzaAverage);
+
+      this.requestLatency.length = 0;
+      this.pizzaLatency.length = 0;
 
       this.sendMetricToGrafana('system', 'cpu', 'cpu', getCpuUsagePercentage());
       this.sendMetricToGrafana('system', 'memory', 'memory', getMemoryUsagePercentage());
@@ -97,11 +108,11 @@ class Metrics {
   }
 
   timeService(startTime, endTime) {
-    this.serviceLatency += endTime - startTime;
+    this.requestLatency.push(endTime - startTime);
   }
 
   timePizza(startTime, endTime) {
-    this.pizzaLatency += endTime - startTime;
+    this.pizzaLatency.push(endTime - startTime);
   }
 
   sendMetricToGrafana(metricPrefix, httpMethod, metricName, metricValue) {

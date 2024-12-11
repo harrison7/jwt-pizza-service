@@ -71,19 +71,23 @@ authRouter.authenticateToken = (req, res, next) => {
 authRouter.post(
   '/',
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     // console.log("Begin register");
-    metrics.userLogin();
     metrics.incrementRequests('post');
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
+      metrics.incrementRequests('fail');
       return res.status(400).json({ message: 'name, email, and password are required' });
     }
+    metrics.userLogin();
+    metrics.incrementRequests('success');
     // console.log("Valid req");
     const user = await DB.addUser({ name, email, password, roles: [{ role: Role.Diner }] });
     // console.log("Finish adding user");
     const auth = await setAuth(user);
     // console.log("Setauth complete");
     res.json({ user: user, token: auth });
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -91,12 +95,19 @@ authRouter.post(
 authRouter.put(
   '/',
   asyncHandler(async (req, res) => {
-    metrics.userLogin();
+    const startTimer = performance.now();
     metrics.incrementRequests('put');
     const { email, password } = req.body;
     const user = await DB.getUser(email, password);
+    if (!user) {
+      metrics.incrementRequests('fail');
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    metrics.userLogin();
+    metrics.incrementRequests('success');
     const auth = await setAuth(user);
     res.json({ user: user, token: auth });
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -105,10 +116,12 @@ authRouter.delete(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     metrics.userLogout();
     metrics.incrementRequests('delete');
     await clearAuth(req);
     res.json({ message: 'logout successful' });
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -117,6 +130,7 @@ authRouter.put(
   '/:userId',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     metrics.incrementRequests('put');
     const { email, password } = req.body;
     const userId = Number(req.params.userId);
@@ -127,6 +141,7 @@ authRouter.put(
 
     const updatedUser = await DB.updateUser(userId, email, password);
     res.json(updatedUser);
+    metrics.timeService(startTimer, performance.now());
   })
 );
 

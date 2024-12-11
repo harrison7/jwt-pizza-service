@@ -47,8 +47,10 @@ orderRouter.endpoints = [
 orderRouter.get(
   '/menu',
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     metrics.incrementRequests('get');
     res.send(await DB.getMenu());
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -57,6 +59,7 @@ orderRouter.put(
   '/menu',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     metrics.incrementRequests('put');
     if (!req.user.isRole(Role.Admin)) {
       throw new StatusCodeError('unable to add menu item', 403);
@@ -65,6 +68,7 @@ orderRouter.put(
     const addMenuItemReq = req.body;
     await DB.addMenuItem(addMenuItemReq);
     res.send(await DB.getMenu());
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -73,8 +77,10 @@ orderRouter.get(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
+    const startTimer = performance.now();
     metrics.incrementRequests('get');
     res.json(await DB.getOrders(req.user, req.query.page));
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
@@ -107,7 +113,8 @@ orderRouter.post(
       metrics.pizzaFail();
       res.status(500).send({ message: 'Failed to fulfill order at factory', reportUrl: j.reportUrl });
     }
-    metrics.pizzaLatency(startTimer, performance.now());
+    metrics.timePizza(startTimer, performance.now());
+    metrics.timeService(startTimer, performance.now());
   })
 );
 
